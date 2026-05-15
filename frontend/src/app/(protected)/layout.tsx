@@ -1,12 +1,25 @@
+import { redirect } from "next/navigation";
 import { AppShell } from "@/shared/components/AppShell";
+import { ToastProvider } from "@/shared/components/Toast";
+import { getSession } from "@/shared/lib/session";
 
-const pageTitles: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/patients": "Patients",
-  "/appointments": "Appointments",
-  "/subscription": "Subscription",
-};
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getSession();
+  if (!session) redirect("/login");
 
-export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <ToastProvider>
+      <AppShell
+        title="EZ-EMR"
+        role={session.role}
+        userEmail={session.email}
+      >
+        {children}
+      </AppShell>
+    </ToastProvider>
+  );
 }

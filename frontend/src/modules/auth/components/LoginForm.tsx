@@ -1,29 +1,43 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { Button } from "@/shared/components/Button";
 import { Input } from "@/shared/components/Input";
 import { Card } from "@/shared/components/Card";
+import { loginAction, FormState } from "@/modules/auth/actions/auth.actions";
 
 export function LoginForm() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    // TODO: wire to auth API
-    await new Promise((r) => setTimeout(r, 500));
-    router.push("/dashboard");
-  }
+  const [state, action, isPending] = useActionState<FormState, FormData>(loginAction, undefined);
 
   return (
     <Card>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Input id="email" label="Email" type="email" placeholder="you@clinic.com" required />
-        <Input id="password" label="Password" type="password" placeholder="••••••••" required />
-        <Button type="submit" loading={loading} className="w-full mt-2">
+      <form action={action} className="space-y-4">
+        {state?.message && (
+          <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            {state.message}
+          </div>
+        )}
+        <Input
+          id="email"
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="you@clinic.com"
+          required
+          autoComplete="email"
+          error={state?.errors?.email?.[0]}
+        />
+        <Input
+          id="password"
+          name="password"
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          required
+          autoComplete="current-password"
+          error={state?.errors?.password?.[0]}
+        />
+        <Button type="submit" loading={isPending} className="w-full mt-2">
           Sign In
         </Button>
       </form>

@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/change-password"];
+
+function decodeRole(token: string): string | null {
+  try {
+    const payload = token.split(".")[1];
+    const decoded = JSON.parse(Buffer.from(payload, "base64url").toString());
+    return decoded.role ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,7 +23,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isPublic && token) {
+  if (isPublic && token && pathname.startsWith("/login")) {
+    const role = decodeRole(token);
+    if (role === "SUPER_ADMIN") return NextResponse.redirect(new URL("/super-admin/tenants", request.url));
+    if (role === "DOCTOR") return NextResponse.redirect(new URL("/doctor/appointments", request.url));
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

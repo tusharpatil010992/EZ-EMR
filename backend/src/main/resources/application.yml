@@ -22,10 +22,13 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
-  security:
-    user:
-      name: admin
-      password: admin
+app:
+  jwt:
+    secret: ${JWT_SECRET:changeme-in-production-minimum-32-characters!}
+    expiration-ms: 86400000
+    refresh-expiration-ms: 604800000
+  super-admin:
+    email: ${SUPER_ADMIN_EMAIL:superadmin@emr.internal}
 
 server:
   port: ${SERVER_PORT:8080}

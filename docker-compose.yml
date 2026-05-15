@@ -43,6 +43,8 @@ services:
     container_name: emr_frontend
     ports:
       - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8080/api
     depends_on:
       - backend
 

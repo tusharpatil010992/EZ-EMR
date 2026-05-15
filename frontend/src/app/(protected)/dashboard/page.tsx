@@ -1,10 +1,18 @@
-import { AppShell } from "@/shared/components/AppShell";
-import { DashboardView } from "@/modules/auth/components/DashboardView";
+import { PageContainer } from "@/shared/components/PageContainer";
+import { Card, CardTitle } from "@/shared/components/Card";
+import { getSession } from "@/shared/lib/session";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await getSession();
+
   return (
-    <AppShell title="Dashboard">
-      <DashboardView />
-    </AppShell>
+    <PageContainer>
+      <Card>
+        <CardTitle className="mb-2">Welcome back</CardTitle>
+        <p className="text-sm text-gray-500">
+          {session?.email} &mdash; {session?.role}
+        </p>
+      </Card>
+    </PageContainer>
   );
 }

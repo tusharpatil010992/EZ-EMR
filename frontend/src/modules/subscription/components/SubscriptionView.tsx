@@ -1,23 +1,38 @@
-import { PageContainer } from "@/shared/components/PageContainer";
 import { Card, CardHeader, CardTitle } from "@/shared/components/Card";
 import { Badge } from "@/shared/components/Badge";
-import { Button } from "@/shared/components/Button";
+import { PageContainer } from "@/shared/components/PageContainer";
+import { SubscriptionPlanInfo } from "../types";
 
-export function SubscriptionView() {
+interface SubscriptionViewProps {
+  plan: SubscriptionPlanInfo | null;
+}
+
+export function SubscriptionView({ plan }: SubscriptionViewProps) {
+  const statusVariant =
+    plan?.status === "ACTIVE" ? "success" : plan?.status === "EXPIRED" ? "error" : "neutral";
+
   return (
     <PageContainer>
       <Card>
         <CardHeader>
           <CardTitle>Current Plan</CardTitle>
-          <Badge variant="success">Active</Badge>
+          {plan && <Badge variant={statusVariant}>{plan.status}</Badge>}
         </CardHeader>
-        <div className="space-y-2 text-sm text-gray-600">
-          <p>Plan: <span className="font-medium text-gray-900">—</span></p>
-          <p>Renewal Date: <span className="font-medium text-gray-900">—</span></p>
-          <p>Seats: <span className="font-medium text-gray-900">—</span></p>
-        </div>
-        <div className="mt-6">
-          <Button variant="secondary" size="sm">Manage Plan</Button>
+        <div className="mt-4 space-y-2 text-sm text-gray-600">
+          <p>
+            Plan:{" "}
+            <span className="font-medium text-gray-900">{plan?.planName ?? "—"}</span>
+          </p>
+          <p>
+            Renewal Date:{" "}
+            <span className="font-medium text-gray-900">
+              {plan?.renewalDate ? new Date(plan.renewalDate).toLocaleDateString() : "—"}
+            </span>
+          </p>
+          <p>
+            Doctor Seats:{" "}
+            <span className="font-medium text-gray-900">{plan?.seats ?? "—"}</span>
+          </p>
         </div>
       </Card>
     </PageContainer>
